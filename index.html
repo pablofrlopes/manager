@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Cadastro de Despesas</title>
+    <title>Sistema de Solicitações de Despesas</title>
     <style>
         * {
             margin: 0;
@@ -12,26 +12,81 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        /* Temas */
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.diurno {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+
+        body.noturno {
+            background: linear-gradient(135deg, #2c3e50 0%, #1a1a2e 100%);
+            color: #ecf0f1;
+        }
+
+        body.noturno .container,
+        body.noturno .form-container,
+        body.noturno input,
+        body.noturno select,
+        body.noturno textarea,
+        body.noturno table {
+            background: #2d2d3a;
+            color: #ecf0f1;
+            border-color: #404040;
+        }
+
+        body.noturno th {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             background: white;
             border-radius: 15px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.1);
             padding: 30px;
+            transition: background-color 0.3s;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         h1 {
-            color: #333;
-            margin-bottom: 30px;
-            text-align: center;
+            color: inherit;
             font-size: 2em;
+        }
+
+        .theme-btn {
+            background: #95a5a6;
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+
+        .admin-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .admin-toggle button {
+            flex: 1;
+            background: #95a5a6;
+        }
+
+        .admin-toggle button.active {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
         }
 
         .form-container {
@@ -39,6 +94,7 @@
             padding: 25px;
             border-radius: 10px;
             margin-bottom: 30px;
+            transition: background-color 0.3s;
         }
 
         .form-group {
@@ -48,7 +104,6 @@
         label {
             display: block;
             margin-bottom: 5px;
-            color: #555;
             font-weight: 500;
         }
 
@@ -59,6 +114,7 @@
             border-radius: 6px;
             font-size: 16px;
             transition: border-color 0.3s;
+            background: white;
         }
 
         input:focus, select:focus, textarea:focus {
@@ -92,6 +148,20 @@
             background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
         }
 
+        .button-warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        }
+
+        .button-info {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+        }
+
+        .button-add {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+
         .table-container {
             overflow-x: auto;
             margin-top: 20px;
@@ -100,6 +170,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            background: white;
         }
 
         th {
@@ -119,27 +190,48 @@
             background: #f5f5f5;
         }
 
-        .total-despesas {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 8px;
-            margin: 20px 0;
-            display: inline-block;
-            font-size: 1.2em;
+        body.noturno tr:hover {
+            background: #3d3d4a;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
             font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-pendente {
+            background: #f39c12;
+            color: white;
+        }
+
+        .status-finalizado {
+            background: #27ae60;
+            color: white;
+        }
+
+        .status-correcao {
+            background: #e74c3c;
+            color: white;
         }
 
         .btn-group {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            font-size: 12px;
+            margin: 2px;
         }
 
         .delete-btn {
             background: #e74c3c;
-            padding: 5px 10px;
-            font-size: 14px;
         }
 
         .delete-btn:hover {
@@ -166,194 +258,723 @@
             border: 1px solid #f5c6cb;
             display: block;
         }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+
+        .nav-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px 5px 0 0;
+            background: #f0f0f0;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        body.noturno .nav-tab {
+            background: #3d3d4a;
+            color: #ecf0f1;
+        }
+
+        .solicitacao-numero {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .filter-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 8px;
+        }
+
+        body.noturno .filter-section {
+            background: #3d3d4a;
+        }
+
+        /* Estilos para múltiplas despesas */
+        .despesas-section {
+            margin-top: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .despesas-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .tabela-despesas {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .tabela-despesas th {
+            background: #95a5a6;
+            font-size: 14px;
+        }
+
+        .tabela-despesas td {
+            padding: 8px;
+        }
+
+        .remove-despesa {
+            background: #e74c3c;
+            padding: 3px 8px;
+            font-size: 12px;
+        }
+
+        .total-solicitacao {
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 15px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+        }
+
+        body.noturno .total-solicitacao {
+            background: #3d3d4a;
+        }
+
+        .correcao-badge {
+            background: #e74c3c;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 5px;
+        }
     </style>
 </head>
-<body>
+<body class="diurno">
     <div class="container">
-        <h1>📝 Sistema de Cadastro de Despesas</h1>
-        
+        <div class="header">
+            <h1>📝 Sistema de Solicitações de Despesas</h1>
+            <button class="theme-btn" onclick="toggleTheme()">🌓 Modo Noturno</button>
+        </div>
+
+        <div class="admin-toggle">
+            <button id="btnUserView" class="active" onclick="mudarVisao('usuario')">👤 Visão do Usuário</button>
+            <button id="btnAdminView" onclick="mudarVisao('admin')">👨‍💼 Visão do Administrador</button>
+        </div>
+
         <div id="statusMessage" class="status-message"></div>
 
-        <div class="form-container">
-            <form id="despesaForm">
-                <div class="form-group">
-                    <label for="data">Data *</label>
-                    <input type="date" id="data" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="categoria">Categoria *</label>
-                    <select id="categoria" required>
-                        <option value="">Selecione uma categoria</option>
-                        <option value="Alimentação">Alimentação</option>
-                        <option value="Transporte">Transporte</option>
-                        <option value="Moradia">Moradia</option>
-                        <option value="Saúde">Saúde</option>
-                        <option value="Educação">Educação</option>
-                        <option value="Lazer">Lazer</option>
-                        <option value="Vestuário">Vestuário</option>
-                        <option value="Outros">Outros</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="descricao">Descrição *</label>
-                    <input type="text" id="descricao" placeholder="Ex: Supermercado, Conta de luz..." required>
-                </div>
-
-                <div class="form-group">
-                    <label for="valor">Valor (R$) *</label>
-                    <input type="number" id="valor" step="0.01" min="0.01" placeholder="0,00" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="formaPagamento">Forma de Pagamento</label>
-                    <select id="formaPagamento">
-                        <option value="Dinheiro">Dinheiro</option>
-                        <option value="Cartão de Crédito">Cartão de Crédito</option>
-                        <option value="Cartão de Débito">Cartão de Débito</option>
-                        <option value="PIX">PIX</option>
-                        <option value="Boleto">Boleto</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="observacoes">Observações</label>
-                    <textarea id="observacoes" rows="3" placeholder="Observações adicionais..."></textarea>
-                </div>
-
-                <div class="btn-group">
-                    <button type="submit">➕ Adicionar Despesa</button>
-                    <button type="button" class="button-success" onclick="exportarParaExcel()">📊 Exportar para Excel</button>
-                    <button type="button" class="button-secondary" onclick="limparFormulario()">🔄 Limpar Formulário</button>
-                </div>
-            </form>
+        <!-- Abas de navegação (visível apenas para usuário) -->
+        <div id="userTabs" class="nav-tabs">
+            <div class="nav-tab active" onclick="mudarAba('form')">➕ Nova Solicitação</div>
+            <div class="nav-tab" onclick="mudarAba('minhasSolicitacoes')">📋 Minhas Solicitações</div>
         </div>
 
-        <div class="total-despesas" id="totalDespesas">
-            Total: R$ 0,00
+        <!-- Formulário de Nova Solicitação -->
+        <div id="formSection">
+            <div class="form-container">
+                <form id="solicitacaoForm">
+                    <!-- Campo oculto para ID da solicitação em correção -->
+                    <input type="hidden" id="solicitacaoId" value="">
+                    
+                    <div class="form-group">
+                        <label for="data">Data da Solicitação *</label>
+                        <input type="date" id="data" required>
+                    </div>
+
+                    <!-- Seção de Despesas Múltiplas -->
+                    <div class="despesas-section">
+                        <div class="despesas-header">
+                            <h3>📦 Despesas da Solicitação</h3>
+                            <button type="button" class="button-add" onclick="adicionarLinhaDespesa()">➕ Adicionar Despesa</button>
+                        </div>
+
+                        <div class="table-container">
+                            <table class="tabela-despesas" id="tabelaDespesas">
+                                <thead>
+                                    <tr>
+                                        <th>Categoria</th>
+                                        <th>Descrição</th>
+                                        <th>Valor (R$)</th>
+                                        <th>Forma Pagamento</th>
+                                        <th>Observações</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="corpoDespesas">
+                                    <!-- Linhas de despesas serão inseridas aqui -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="total-solicitacao" id="totalSolicitacao">
+                            Total da Solicitação: R$ 0,00
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="submit">📤 Enviar Solicitação</button>
+                        <button type="button" class="button-secondary" onclick="limparFormulario()">🔄 Limpar Formulário</button>
+                    </div>
+                </form>
+            </div>
         </div>
 
-        <div class="table-container">
-            <table id="tabelaDespesas">
-                <thead>
-                    <tr>
-                        <th>Data</th>
-                        <th>Categoria</th>
-                        <th>Descrição</th>
-                        <th>Valor (R$)</th>
-                        <th>Forma de Pagamento</th>
-                        <th>Observações</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="corpoTabela">
-                    <!-- As despesas serão inseridas aqui via JavaScript -->
-                </tbody>
-            </table>
+        <!-- Seção de Minhas Solicitações -->
+        <div id="minhasSolicitacoesSection" style="display: none;">
+            <div class="filter-section">
+                <h3>Filtrar por status:</h3>
+                <select id="filtroStatus" onchange="filtrarSolicitacoes()">
+                    <option value="todos">Todos</option>
+                    <option value="pendente">Pendente de Aprovação</option>
+                    <option value="correcao">Correção</option>
+                    <option value="finalizado">Finalizado</option>
+                </select>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Solicitação</th>
+                            <th>Data</th>
+                            <th>Qtd. Despesas</th>
+                            <th>Valor Total</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaMinhasSolicitacoes">
+                        <!-- Será preenchido via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Seção do Administrador (visível apenas no modo admin) -->
+        <div id="adminSection" style="display: none;">
+            <div class="filter-section">
+                <h3>Filtrar por status:</h3>
+                <select id="filtroAdminStatus" onchange="filtrarSolicitacoesAdmin()">
+                    <option value="todos">Todos</option>
+                    <option value="pendente">Pendente de Aprovação</option>
+                    <option value="correcao">Correção</option>
+                    <option value="finalizado">Finalizado</option>
+                </select>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Solicitação</th>
+                            <th>Usuário</th>
+                            <th>Data</th>
+                            <th>Qtd. Despesas</th>
+                            <th>Valor Total</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaAdminSolicitacoes">
+                        <!-- Será preenchido via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Consultar Solicitação -->
+    <div id="modalConsulta" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000;">
+        <div style="background: white; padding: 30px; border-radius: 10px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;">
+            <h2 id="modalTitulo">Detalhes da Solicitação</h2>
+            <div id="modalConteudo"></div>
+            <button onclick="fecharModal()">Fechar</button>
         </div>
     </div>
 
     <script>
-        // Array para armazenar as despesas
-        let despesas = [];
+        // Estruturas de dados
+        let solicitacoes = [];
+        let usuarios = ['Usuário Padrão'];
+        let visaoAtual = 'usuario';
+        let abaAtual = 'form';
+        let temaAtual = 'diurno';
+        let contadorSolicitacoes = 1;
+        let solicitacaoEmEdicao = null; // Para controle de correção
 
-        // Carregar despesas do localStorage ao iniciar
+        // Inicialização
         document.addEventListener('DOMContentLoaded', function() {
-            carregarDespesas();
+            carregarDados();
+            atualizarContador();
+            atualizarTabelas();
+            adicionarLinhaDespesa(); // Adiciona uma linha vazia inicial
         });
 
         // Evento de submit do formulário
-        document.getElementById('despesaForm').addEventListener('submit', function(e) {
+        document.getElementById('solicitacaoForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            adicionarDespesa();
+            enviarSolicitacao();
         });
 
-        function adicionarDespesa() {
-            // Obter valores do formulário
+        // Funções de Tema
+        function toggleTheme() {
+            const body = document.body;
+            const themeBtn = document.querySelector('.theme-btn');
+            
+            if (temaAtual === 'diurno') {
+                body.classList.remove('diurno');
+                body.classList.add('noturno');
+                themeBtn.textContent = '☀️ Modo Diurno';
+                temaAtual = 'noturno';
+            } else {
+                body.classList.remove('noturno');
+                body.classList.add('diurno');
+                themeBtn.textContent = '🌓 Modo Noturno';
+                temaAtual = 'diurno';
+            }
+        }
+
+        // Funções de Navegação
+        function mudarVisao(visao) {
+            visaoAtual = visao;
+            
+            document.getElementById('btnUserView').classList.toggle('active', visao === 'usuario');
+            document.getElementById('btnAdminView').classList.toggle('active', visao === 'admin');
+            
+            if (visao === 'usuario') {
+                document.getElementById('userTabs').style.display = 'flex';
+                document.getElementById('adminSection').style.display = 'none';
+                mudarAba(abaAtual);
+            } else {
+                document.getElementById('userTabs').style.display = 'none';
+                document.getElementById('formSection').style.display = 'none';
+                document.getElementById('minhasSolicitacoesSection').style.display = 'none';
+                document.getElementById('adminSection').style.display = 'block';
+                atualizarTabelaAdmin();
+            }
+        }
+
+        function mudarAba(aba) {
+            abaAtual = aba;
+            
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            if (aba === 'form') {
+                document.getElementById('formSection').style.display = 'block';
+                document.getElementById('minhasSolicitacoesSection').style.display = 'none';
+            } else {
+                document.getElementById('formSection').style.display = 'none';
+                document.getElementById('minhasSolicitacoesSection').style.display = 'block';
+                atualizarMinhasSolicitacoes();
+            }
+        }
+
+        // Funções para Múltiplas Despesas
+        function adicionarLinhaDespesa(despesa = null) {
+            const tbody = document.getElementById('corpoDespesas');
+            const row = document.createElement('tr');
+            
+            const categoria = despesa ? despesa.categoria : '';
+            const descricao = despesa ? despesa.descricao : '';
+            const valor = despesa ? despesa.valor : '';
+            const formaPagamento = despesa ? despesa.formaPagamento : 'Dinheiro';
+            const observacoes = despesa ? despesa.observacoes : '';
+            
+            row.innerHTML = `
+                <td>
+                    <select class="categoria-despesa" required>
+                        <option value="">Selecione</option>
+                        <option value="Alimentação" ${categoria === 'Alimentação' ? 'selected' : ''}>Alimentação</option>
+                        <option value="Transporte" ${categoria === 'Transporte' ? 'selected' : ''}>Transporte</option>
+                        <option value="Moradia" ${categoria === 'Moradia' ? 'selected' : ''}>Moradia</option>
+                        <option value="Saúde" ${categoria === 'Saúde' ? 'selected' : ''}>Saúde</option>
+                        <option value="Educação" ${categoria === 'Educação' ? 'selected' : ''}>Educação</option>
+                        <option value="Lazer" ${categoria === 'Lazer' ? 'selected' : ''}>Lazer</option>
+                        <option value="Vestuário" ${categoria === 'Vestuário' ? 'selected' : ''}>Vestuário</option>
+                        <option value="Outros" ${categoria === 'Outros' ? 'selected' : ''}>Outros</option>
+                    </select>
+                </td>
+                <td><input type="text" class="descricao-despesa" value="${descricao}" placeholder="Descrição" required></td>
+                <td><input type="number" class="valor-despesa" step="0.01" min="0.01" value="${valor}" placeholder="0,00" required onchange="calcularTotalSolicitacao()"></td>
+                <td>
+                    <select class="formaPagamento-despesa">
+                        <option value="Dinheiro" ${formaPagamento === 'Dinheiro' ? 'selected' : ''}>Dinheiro</option>
+                        <option value="Cartão de Crédito" ${formaPagamento === 'Cartão de Crédito' ? 'selected' : ''}>Cartão de Crédito</option>
+                        <option value="Cartão de Débito" ${formaPagamento === 'Cartão de Débito' ? 'selected' : ''}>Cartão de Débito</option>
+                        <option value="PIX" ${formaPagamento === 'PIX' ? 'selected' : ''}>PIX</option>
+                        <option value="Boleto" ${formaPagamento === 'Boleto' ? 'selected' : ''}>Boleto</option>
+                    </select>
+                </td>
+                <td><input type="text" class="observacoes-despesa" value="${observacoes}" placeholder="Obs"></td>
+                <td><button type="button" class="remove-despesa" onclick="removerLinhaDespesa(this)">✖</button></td>
+            `;
+            
+            tbody.appendChild(row);
+        }
+
+        function removerLinhaDespesa(botao) {
+            const row = botao.closest('tr');
+            row.remove();
+            calcularTotalSolicitacao();
+            
+            // Se não houver mais linhas, adiciona uma vazia
+            if (document.getElementById('corpoDespesas').children.length === 0) {
+                adicionarLinhaDespesa();
+            }
+        }
+
+        function calcularTotalSolicitacao() {
+            const valores = document.querySelectorAll('.valor-despesa');
+            let total = 0;
+            
+            valores.forEach(input => {
+                const valor = parseFloat(input.value) || 0;
+                total += valor;
+            });
+            
+            document.getElementById('totalSolicitacao').textContent = 
+                `Total da Solicitação: R$ ${total.toFixed(2).replace('.', ',')}`;
+            
+            return total;
+        }
+
+        function coletarDespesasDoForm() {
+            const linhas = document.querySelectorAll('#corpoDespesas tr');
+            const despesas = [];
+            
+            linhas.forEach(row => {
+                const categoria = row.querySelector('.categoria-despesa').value;
+                const descricao = row.querySelector('.descricao-despesa').value;
+                const valor = parseFloat(row.querySelector('.valor-despesa').value) || 0;
+                const formaPagamento = row.querySelector('.formaPagamento-despesa').value;
+                const observacoes = row.querySelector('.observacoes-despesa').value;
+                
+                if (categoria && descricao && valor > 0) {
+                    despesas.push({
+                        categoria,
+                        descricao,
+                        valor,
+                        formaPagamento,
+                        observacoes
+                    });
+                }
+            });
+            
+            return despesas;
+        }
+
+        // Função principal de envio
+        function enviarSolicitacao() {
             const data = document.getElementById('data').value;
-            const categoria = document.getElementById('categoria').value;
-            const descricao = document.getElementById('descricao').value;
-            const valor = parseFloat(document.getElementById('valor').value);
-            const formaPagamento = document.getElementById('formaPagamento').value;
-            const observacoes = document.getElementById('observacoes').value;
-
-            // Validar campos obrigatórios
-            if (!data || !categoria || !descricao || !valor) {
-                mostrarMensagem('Por favor, preencha todos os campos obrigatórios.', 'error');
+            const solicitacaoId = document.getElementById('solicitacaoId').value;
+            const despesas = coletarDespesasDoForm();
+            
+            if (!data) {
+                mostrarMensagem('Selecione a data da solicitação!', 'error');
                 return;
             }
-
-            // Criar objeto despesa
-            const despesa = {
-                id: Date.now(),
-                data: data,
-                categoria: categoria,
-                descricao: descricao,
-                valor: valor,
-                formaPagamento: formaPagamento,
-                observacoes: observacoes
-            };
-
-            // Adicionar ao array
-            despesas.push(despesa);
-
-            // Salvar no localStorage
-            salvarDespesas();
-
-            // Atualizar tabela
-            atualizarTabela();
-
-            // Atualizar total
-            atualizarTotal();
-
-            // Limpar formulário
-            document.getElementById('despesaForm').reset();
-
-            // Mostrar mensagem de sucesso
-            mostrarMensagem('Despesa adicionada com sucesso!', 'success');
-        }
-
-        function removerDespesa(id) {
-            if (confirm('Tem certeza que deseja excluir esta despesa?')) {
-                despesas = despesas.filter(despesa => despesa.id !== id);
-                salvarDespesas();
-                atualizarTabela();
-                atualizarTotal();
-                mostrarMensagem('Despesa removida com sucesso!', 'success');
-            }
-        }
-
-        function atualizarTabela() {
-            const corpoTabela = document.getElementById('corpoTabela');
-            corpoTabela.innerHTML = '';
-
+            
             if (despesas.length === 0) {
-                corpoTabela.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">Nenhuma despesa cadastrada.</td></tr>';
+                mostrarMensagem('Adicione pelo menos uma despesa válida!', 'error');
                 return;
             }
+            
+            const valorTotal = despesas.reduce((acc, d) => acc + d.valor, 0);
+            
+            if (solicitacaoId) {
+                // É uma CORREÇÃO - manter o mesmo número
+                const solicitacaoExistente = solicitacoes.find(s => s.id === parseInt(solicitacaoId));
+                
+                if (solicitacaoExistente) {
+                    solicitacaoExistente.data = data;
+                    solicitacaoExistente.despesas = despesas;
+                    solicitacaoExistente.valorTotal = valorTotal;
+                    solicitacaoExistente.status = 'pendente'; // Volta para pendente após correção
+                    solicitacaoExistente.historico.push({
+                        data: new Date().toISOString(),
+                        acao: 'Correção enviada',
+                        observacao: 'Usuário enviou correção da solicitação'
+                    });
+                    
+                    salvarDados();
+                    mostrarMensagem(`Solicitação #${solicitacaoExistente.numero} corrigida com sucesso!`, 'success');
+                }
+            } else {
+                // É uma NOVA solicitação - criar novo número
+                const solicitacao = {
+                    id: Date.now(),
+                    numero: contadorSolicitacoes++,
+                    usuario: 'Usuário Padrão',
+                    data: data,
+                    despesas: despesas,
+                    valorTotal: valorTotal,
+                    status: 'pendente',
+                    historico: [{
+                        data: new Date().toISOString(),
+                        acao: 'Criação',
+                        observacao: 'Solicitação criada'
+                    }]
+                };
+                
+                solicitacoes.push(solicitacao);
+                salvarDados();
+                mostrarMensagem(`Solicitação #${solicitacao.numero} enviada com sucesso!`, 'success');
+            }
+            
+            limparFormulario();
+            mudarAba('minhasSolicitacoes');
+        }
 
-            despesas.sort((a, b) => new Date(b.data) - new Date(a.data)).forEach(despesa => {
+        // Funções de atualização das tabelas
+        function atualizarMinhasSolicitacoes() {
+            const filtro = document.getElementById('filtroStatus').value;
+            const tbody = document.getElementById('tabelaMinhasSolicitacoes');
+            
+            let solicitacoesFiltradas = solicitacoes.filter(s => s.usuario === 'Usuário Padrão');
+            
+            if (filtro !== 'todos') {
+                solicitacoesFiltradas = solicitacoesFiltradas.filter(s => s.status === filtro);
+            }
+            
+            tbody.innerHTML = '';
+            
+            if (solicitacoesFiltradas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 30px;">Nenhuma solicitação encontrada.</td></tr>';
+                return;
+            }
+            
+            solicitacoesFiltradas.sort((a, b) => b.numero - a.numero).forEach(s => {
                 const tr = document.createElement('tr');
+                const statusClass = s.status === 'pendente' ? 'status-pendente' : 
+                                   s.status === 'correcao' ? 'status-correcao' : 'status-finalizado';
+                const statusText = s.status === 'pendente' ? 'Pendente' :
+                                  s.status === 'correcao' ? 'Correção' : 'Finalizado';
+                
+                let acoes = '';
+                if (s.status === 'pendente') {
+                    acoes = `
+                        <button class="action-btn delete-btn" onclick="excluirSolicitacao(${s.id})">Excluir</button>
+                        <button class="action-btn button-info" onclick="consultarSolicitacao(${s.id})">Consultar</button>
+                    `;
+                } else if (s.status === 'correcao') {
+                    acoes = `
+                        <button class="action-btn button-warning" onclick="editarSolicitacao(${s.id})">Corrigir</button>
+                        <button class="action-btn button-info" onclick="consultarSolicitacao(${s.id})">Consultar</button>
+                    `;
+                } else {
+                    acoes = `
+                        <button class="action-btn button-info" onclick="consultarSolicitacao(${s.id})">Consultar</button>
+                    `;
+                }
+                
                 tr.innerHTML = `
-                    <td>${formatarData(despesa.data)}</td>
-                    <td>${despesa.categoria}</td>
-                    <td>${despesa.descricao}</td>
-                    <td>R$ ${despesa.valor.toFixed(2).replace('.', ',')}</td>
-                    <td>${despesa.formaPagamento || '-'}</td>
-                    <td>${despesa.observacoes || '-'}</td>
-                    <td>
-                        <button class="delete-btn" onclick="removerDespesa(${despesa.id})">Excluir</button>
-                    </td>
+                    <td><span class="solicitacao-numero">#${s.numero}</span></td>
+                    <td>${formatarData(s.data)}</td>
+                    <td>${s.despesas.length} despesa(s)</td>
+                    <td>R$ ${s.valorTotal.toFixed(2).replace('.', ',')}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td class="btn-group">${acoes}</td>
                 `;
-                corpoTabela.appendChild(tr);
+                tbody.appendChild(tr);
             });
         }
 
-        function atualizarTotal() {
-            const total = despesas.reduce((acc, despesa) => acc + despesa.valor, 0);
-            document.getElementById('totalDespesas').textContent = 
-                `Total: R$ ${total.toFixed(2).replace('.', ',')}`;
+        function atualizarTabelaAdmin() {
+            const filtro = document.getElementById('filtroAdminStatus').value;
+            const tbody = document.getElementById('tabelaAdminSolicitacoes');
+            
+            let solicitacoesFiltradas = solicitacoes;
+            
+            if (filtro !== 'todos') {
+                solicitacoesFiltradas = solicitacoesFiltradas.filter(s => s.status === filtro);
+            }
+            
+            tbody.innerHTML = '';
+            
+            if (solicitacoesFiltradas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">Nenhuma solicitação encontrada.</td></tr>';
+                return;
+            }
+            
+            solicitacoesFiltradas.sort((a, b) => b.numero - a.numero).forEach(s => {
+                const tr = document.createElement('tr');
+                const statusClass = s.status === 'pendente' ? 'status-pendente' : 
+                                   s.status === 'correcao' ? 'status-correcao' : 'status-finalizado';
+                const statusText = s.status === 'pendente' ? 'Pendente' :
+                                  s.status === 'correcao' ? 'Correção' : 'Finalizado';
+                
+                let acoes = '';
+                if (s.status === 'pendente') {
+                    acoes = `
+                        <button class="action-btn button-success" onclick="aprovarSolicitacao(${s.id})">Aprovar</button>
+                        <button class="action-btn button-warning" onclick="solicitarCorrecao(${s.id})">Correção</button>
+                        <button class="action-btn button-info" onclick="consultarSolicitacao(${s.id})">Consultar</button>
+                    `;
+                } else if (s.status === 'correcao') {
+                    acoes = `
+                        <button class="action-btn button-success" onclick="aprovarSolicitacao(${s.id})">Aprovar</button>
+                        <button class="action-btn button-info" onclick="consultarSolicitacao(${s.id})">Consultar</button>
+                    `;
+                } else {
+                    acoes = `
+                        <button class="action-btn button-info" onclick="consultarSolicitacao(${s.id})">Consultar</button>
+                    `;
+                }
+                
+                tr.innerHTML = `
+                    <td><span class="solicitacao-numero">#${s.numero}</span></td>
+                    <td>${s.usuario}</td>
+                    <td>${formatarData(s.data)}</td>
+                    <td>${s.despesas.length} despesa(s)</td>
+                    <td>R$ ${s.valorTotal.toFixed(2).replace('.', ',')}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td class="btn-group">${acoes}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Funções de ação
+        function aprovarSolicitacao(id) {
+            const solicitacao = solicitacoes.find(s => s.id === id);
+            if (solicitacao) {
+                solicitacao.status = 'finalizado';
+                solicitacao.historico.push({
+                    data: new Date().toISOString(),
+                    acao: 'Aprovação',
+                    observacao: 'Solicitação aprovada pelo administrador'
+                });
+                salvarDados();
+                atualizarTabelaAdmin();
+                mostrarMensagem(`Solicitação #${solicitacao.numero} aprovada!`, 'success');
+            }
+        }
+
+        function solicitarCorrecao(id) {
+            const observacao = prompt('Digite o motivo da correção necessária:');
+            if (observacao) {
+                const solicitacao = solicitacoes.find(s => s.id === id);
+                if (solicitacao) {
+                    solicitacao.status = 'correcao';
+                    solicitacao.historico.push({
+                        data: new Date().toISOString(),
+                        acao: 'Correção Solicitada',
+                        observacao: observacao
+                    });
+                    salvarDados();
+                    atualizarTabelaAdmin();
+                    mostrarMensagem(`Correção solicitada para #${solicitacao.numero}`, 'success');
+                }
+            }
+        }
+
+        function excluirSolicitacao(id) {
+            if (confirm('Tem certeza que deseja excluir esta solicitação?')) {
+                solicitacoes = solicitacoes.filter(s => s.id !== id);
+                salvarDados();
+                atualizarMinhasSolicitacoes();
+                mostrarMensagem('Solicitação excluída com sucesso!', 'success');
+            }
+        }
+
+        function editarSolicitacao(id) {
+            const solicitacao = solicitacoes.find(s => s.id === id);
+            if (solicitacao) {
+                // Limpar linhas existentes
+                document.getElementById('corpoDespesas').innerHTML = '';
+                
+                // Preencher data
+                document.getElementById('data').value = solicitacao.data;
+                
+                // Preencher ID da solicitação em correção
+                document.getElementById('solicitacaoId').value = solicitacao.id;
+                
+                // Adicionar linhas de despesas
+                solicitacao.despesas.forEach(despesa => {
+                    adicionarLinhaDespesa(despesa);
+                });
+                
+                // Se não houver despesas, adiciona uma linha vazia
+                if (solicitacao.despesas.length === 0) {
+                    adicionarLinhaDespesa();
+                }
+                
+                calcularTotalSolicitacao();
+                
+                // Ir para o formulário
+                mudarAba('form');
+                mostrarMensagem(`Editando solicitação #${solicitacao.numero} - mantenha o mesmo número`, 'success');
+            }
+        }
+
+        function consultarSolicitacao(id) {
+            const solicitacao = solicitacoes.find(s => s.id === id);
+            if (solicitacao) {
+                const modal = document.getElementById('modalConsulta');
+                const conteudo = document.getElementById('modalConteudo');
+                
+                let despesasHtml = '<table style="width:100%; margin:10px 0;"><tr><th>Categoria</th><th>Descrição</th><th>Valor</th></tr>';
+                solicitacao.despesas.forEach(d => {
+                    despesasHtml += `<tr>
+                        <td>${d.categoria}</td>
+                        <td>${d.descricao}</td>
+                        <td>R$ ${d.valor.toFixed(2).replace('.', ',')}</td>
+                    </tr>`;
+                });
+                despesasHtml += `</table><p><strong>Total: R$ ${solicitacao.valorTotal.toFixed(2).replace('.', ',')}</strong></p>`;
+                
+                let historicoHtml = '';
+                solicitacao.historico.forEach(item => {
+                    historicoHtml += `<p><strong>${new Date(item.data).toLocaleString()}</strong> - ${item.acao}: ${item.observacao}</p>`;
+                });
+                
+                conteudo.innerHTML = `
+                    <p><strong>Solicitação #:</strong> ${solicitacao.numero}</p>
+                    <p><strong>Data da Solicitação:</strong> ${formatarData(solicitacao.data)}</p>
+                    <p><strong>Status:</strong> ${solicitacao.status}</p>
+                    <hr>
+                    <h3>Despesas:</h3>
+                    ${despesasHtml}
+                    <hr>
+                    <h3>Histórico:</h3>
+                    ${historicoHtml}
+                `;
+                
+                modal.style.display = 'flex';
+            }
+        }
+
+        function fecharModal() {
+            document.getElementById('modalConsulta').style.display = 'none';
+        }
+
+        function filtrarSolicitacoes() {
+            atualizarMinhasSolicitacoes();
+        }
+
+        function filtrarSolicitacoesAdmin() {
+            atualizarTabelaAdmin();
+        }
+
+        function limparFormulario() {
+            document.getElementById('solicitacaoForm').reset();
+            document.getElementById('solicitacaoId').value = '';
+            document.getElementById('corpoDespesas').innerHTML = '';
+            adicionarLinhaDespesa(); // Adiciona uma linha vazia
+            calcularTotalSolicitacao();
         }
 
         function formatarData(dataString) {
@@ -364,6 +985,7 @@
         function mostrarMensagem(mensagem, tipo) {
             const statusDiv = document.getElementById('statusMessage');
             statusDiv.textContent = mensagem;
+            statusDiv.style.display = 'block';
             statusDiv.className = `status-message ${tipo}`;
             
             setTimeout(() => {
@@ -372,62 +994,34 @@
             }, 3000);
         }
 
-        function limparFormulario() {
-            document.getElementById('despesaForm').reset();
+        function salvarDados() {
+            localStorage.setItem('solicitacoes', JSON.stringify(solicitacoes));
+            localStorage.setItem('contador', contadorSolicitacoes);
         }
 
-        function salvarDespesas() {
-            localStorage.setItem('despesas', JSON.stringify(despesas));
-        }
-
-        function carregarDespesas() {
-            const despesasSalvas = localStorage.getItem('despesas');
-            if (despesasSalvas) {
-                despesas = JSON.parse(despesasSalvas);
-                atualizarTabela();
-                atualizarTotal();
-            }
-        }
-
-        function exportarParaExcel() {
-            if (despesas.length === 0) {
-                mostrarMensagem('Não há despesas para exportar!', 'error');
-                return;
-            }
-
-            // Criar cabeçalho do CSV
-            let csv = 'Data,Categoria,Descrição,Valor,Forma de Pagamento,Observações\n';
-
-            // Adicionar linhas de dados
-            despesas.forEach(despesa => {
-                const linha = [
-                    formatarData(despesa.data),
-                    `"${despesa.categoria}"`,
-                    `"${despesa.descricao}"`,
-                    despesa.valor.toFixed(2).replace('.', ','),
-                    `"${despesa.formaPagamento || ''}"`,
-                    `"${despesa.observacoes || ''}"`
-                ].join(',');
-                csv += linha + '\n';
-            });
-
-            // Adicionar linha com total
-            const total = despesas.reduce((acc, despesa) => acc + despesa.valor, 0);
-            csv += `\n"TOTAL GERAL",,,${total.toFixed(2).replace('.', ',')},,\n`;
-
-            // Criar e baixar o arquivo
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
+        function carregarDados() {
+            const solicitacoesSalvas = localStorage.getItem('solicitacoes');
+            const contadorSalvo = localStorage.getItem('contador');
             
-            link.href = url;
-            link.setAttribute('download', `despesas_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+            if (solicitacoesSalvas) {
+                solicitacoes = JSON.parse(solicitacoesSalvas);
+            }
+            
+            if (contadorSalvo) {
+                contadorSolicitacoes = parseInt(contadorSalvo);
+            }
+        }
 
-            mostrarMensagem('Arquivo exportado com sucesso!', 'success');
+        function atualizarContador() {
+            if (solicitacoes.length > 0) {
+                const maxNumero = Math.max(...solicitacoes.map(s => s.numero));
+                contadorSolicitacoes = maxNumero + 1;
+            }
+        }
+
+        function atualizarTabelas() {
+            atualizarMinhasSolicitacoes();
+            atualizarTabelaAdmin();
         }
     </script>
 </body>
