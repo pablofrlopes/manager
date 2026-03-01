@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
     <title>Sistema de Solicitações de Despesas</title>
     <style>
         * {
@@ -12,13 +12,13 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Temas */
         body {
             min-height: 100vh;
-            padding: 20px;
+            padding: 10px;
             transition: background-color 0.3s, color 0.3s;
         }
 
+        /* Temas */
         body.diurno {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #333;
@@ -35,7 +35,8 @@
         body.noturno select,
         body.noturno textarea,
         body.noturno table,
-        body.noturno .modal-content {
+        body.noturno .modal-content,
+        body.noturno .login-box {
             background: #2d2d3a;
             color: #ecf0f1;
             border-color: #404040;
@@ -45,105 +46,244 @@
             background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
         }
 
-        body.noturno .modal-content {
-            background: #2d2d3a;
-            color: #ecf0f1;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-        }
-
-        body.noturno .modal-content button {
-            background: #3498db;
-        }
-
-        .container {
+        .container, .login-container {
             max-width: 1200px;
             margin: 0 auto;
             background: white;
             border-radius: 15px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            padding: 30px;
+            padding: 20px;
             transition: background-color 0.3s;
+        }
+
+        /* Responsividade do container */
+        @media (min-width: 768px) {
+            .container, .login-container {
+                padding: 30px;
+            }
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 20px auto;
+        }
+
+        @media (min-width: 768px) {
+            .login-container {
+                margin: 50px auto;
+            }
+        }
+
+        .login-box {
+            padding: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .login-box {
+                padding: 30px;
+            }
+        }
+
+        .login-box h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .login-box h2 {
+                font-size: 2rem;
+                margin-bottom: 30px;
+            }
+        }
+
+        .login-box .form-group {
+            margin-bottom: 15px;
+        }
+
+        .login-box button {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .login-links {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .login-links a {
+            color: #667eea;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
         }
 
         .header {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
+            flex-direction: column;
             gap: 15px;
+            margin-bottom: 20px;
         }
 
-        h1 {
-            color: inherit;
-            font-size: 2em;
+        @media (min-width: 768px) {
+            .header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 30px;
+            }
         }
 
-        .theme-btn {
-            background: #95a5a6;
-            padding: 10px 20px;
-            font-size: 14px;
+        .header h1 {
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        @media (min-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+                text-align: left;
+            }
+        }
+
+        .header-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        @media (min-width: 768px) {
+            .header-controls {
+                flex-direction: row;
+                align-items: center;
+            }
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        @media (min-width: 768px) {
+            .user-info {
+                flex-direction: row;
+            }
+        }
+
+        .user-name {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .theme-btn, .logout-btn {
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .theme-btn, .logout-btn {
+                width: auto;
+            }
         }
 
         .admin-toggle {
             display: flex;
+            flex-direction: column;
             gap: 10px;
             margin-bottom: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .admin-toggle {
+                flex-direction: row;
+            }
         }
 
         .admin-toggle button {
             flex: 1;
             background: #95a5a6;
+            width: 100%;
         }
 
         .admin-toggle button.active {
             background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
         }
 
+        .admin-toggle button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .form-container {
             background: #f8f9fa;
-            padding: 25px;
+            padding: 15px;
             border-radius: 10px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             transition: background-color 0.3s;
         }
 
+        @media (min-width: 768px) {
+            .form-container {
+                padding: 25px;
+                margin-bottom: 30px;
+            }
+        }
+
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+        }
+
+        @media (min-width: 768px) {
+            .form-group {
+                margin-bottom: 15px;
+            }
         }
 
         label {
             display: block;
             margin-bottom: 5px;
             font-weight: 500;
+            font-size: 14px;
         }
 
         input, select, textarea {
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             border: 2px solid #e0e0e0;
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 14px;
             transition: border-color 0.3s;
             background: white;
         }
 
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #667eea;
+        @media (min-width: 768px) {
+            input, select, textarea {
+                padding: 10px;
+                font-size: 16px;
+            }
         }
 
         button {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 12px 30px;
+            padding: 10px 20px;
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
-            margin-right: 10px;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            button {
+                padding: 12px 30px;
+                font-size: 16px;
+                width: auto;
+                margin-right: 10px;
+            }
         }
 
         button:hover {
@@ -173,44 +313,91 @@
 
         .button-add {
             background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-            padding: 8px 15px;
-            font-size: 14px;
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+
+        @media (min-width: 768px) {
+            .button-add {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
         }
 
         .export-buttons {
             display: flex;
+            flex-direction: column;
             gap: 10px;
-            margin: 20px 0;
-            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+
+        @media (min-width: 768px) {
+            .export-buttons {
+                flex-direction: row;
+                margin: 20px 0;
+            }
         }
 
         .export-buttons button {
             flex: 1;
-            min-width: 150px;
+            min-width: auto;
+        }
+
+        @media (min-width: 768px) {
+            .export-buttons button {
+                min-width: 150px;
+            }
         }
 
         .table-container {
             overflow-x: auto;
-            margin-top: 20px;
+            margin-top: 15px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        @media (min-width: 768px) {
+            .table-container {
+                margin-top: 20px;
+            }
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             background: white;
+            font-size: 12px;
+        }
+
+        @media (min-width: 768px) {
+            table {
+                font-size: 14px;
+            }
         }
 
         th {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 12px;
+            padding: 8px;
             font-weight: 500;
+            white-space: nowrap;
+        }
+
+        @media (min-width: 768px) {
+            th {
+                padding: 12px;
+            }
         }
 
         td {
-            padding: 12px;
+            padding: 8px;
             text-align: center;
             border-bottom: 1px solid #e0e0e0;
+        }
+
+        @media (min-width: 768px) {
+            td {
+                padding: 12px;
+            }
         }
 
         tr:hover {
@@ -222,11 +409,19 @@
         }
 
         .status-badge {
-            padding: 5px 10px;
+            padding: 4px 8px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 10px;
             font-weight: 600;
             display: inline-block;
+            white-space: nowrap;
+        }
+
+        @media (min-width: 768px) {
+            .status-badge {
+                padding: 5px 10px;
+                font-size: 12px;
+            }
         }
 
         .status-pendente {
@@ -249,17 +444,39 @@
             color: white;
         }
 
+        .status-reaberto {
+            background: #3498db;
+            color: white;
+        }
+
         .btn-group {
             display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        @media (min-width: 768px) {
+            .btn-group {
+                flex-direction: row;
+                gap: 10px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
         }
 
         .action-btn {
-            padding: 5px 10px;
-            font-size: 12px;
-            margin: 2px;
+            padding: 5px 8px;
+            font-size: 10px;
+            margin: 0;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .action-btn {
+                padding: 5px 10px;
+                font-size: 12px;
+                width: auto;
+            }
         }
 
         .delete-btn {
@@ -271,10 +488,19 @@
         }
 
         .status-message {
-            padding: 10px;
+            padding: 8px;
             border-radius: 5px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             display: none;
+            font-size: 14px;
+        }
+
+        @media (min-width: 768px) {
+            .status-message {
+                padding: 10px;
+                margin-bottom: 15px;
+                font-size: 16px;
+            }
         }
 
         .success {
@@ -293,17 +519,36 @@
 
         .nav-tabs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 15px;
             border-bottom: 2px solid #e0e0e0;
             padding-bottom: 10px;
         }
 
+        @media (min-width: 768px) {
+            .nav-tabs {
+                flex-direction: row;
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+        }
+
         .nav-tab {
-            padding: 10px 20px;
+            padding: 8px 15px;
             cursor: pointer;
-            border-radius: 5px 5px 0 0;
+            border-radius: 5px;
             background: #f0f0f0;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        @media (min-width: 768px) {
+            .nav-tab {
+                padding: 10px 20px;
+                border-radius: 5px 5px 0 0;
+                font-size: 16px;
+            }
         }
 
         .nav-tab.active {
@@ -311,86 +556,127 @@
             color: white;
         }
 
-        body.noturno .nav-tab {
-            background: #3d3d4a;
-            color: #ecf0f1;
-        }
-
         .solicitacao-numero {
             font-weight: bold;
             color: #667eea;
+            font-size: 12px;
+        }
+
+        @media (min-width: 768px) {
+            .solicitacao-numero {
+                font-size: 14px;
+            }
         }
 
         .filter-section {
-            margin-bottom: 20px;
-            padding: 15px;
+            margin-bottom: 15px;
+            padding: 12px;
             background: #f0f0f0;
             border-radius: 8px;
         }
 
-        body.noturno .filter-section {
-            background: #3d3d4a;
+        @media (min-width: 768px) {
+            .filter-section {
+                margin-bottom: 20px;
+                padding: 15px;
+            }
         }
 
-        /* Estilos para múltiplas despesas */
         .despesas-section {
-            margin-top: 20px;
+            margin-top: 15px;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
-            padding: 15px;
+            padding: 12px;
+        }
+
+        @media (min-width: 768px) {
+            .despesas-section {
+                margin-top: 20px;
+                padding: 15px;
+            }
         }
 
         .despesas-header {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        @media (min-width: 768px) {
+            .despesas-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 15px;
+            }
+        }
+
+        .despesas-header h3 {
+            font-size: 16px;
+        }
+
+        @media (min-width: 768px) {
+            .despesas-header h3 {
+                font-size: 18px;
+            }
         }
 
         .tabela-despesas {
             width: 100%;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+            font-size: 11px;
+        }
+
+        @media (min-width: 768px) {
+            .tabela-despesas {
+                margin-bottom: 15px;
+                font-size: 14px;
+            }
         }
 
         .tabela-despesas th {
             background: #95a5a6;
-            font-size: 14px;
+            font-size: 11px;
+            padding: 6px;
+        }
+
+        @media (min-width: 768px) {
+            .tabela-despesas th {
+                font-size: 14px;
+                padding: 8px;
+            }
         }
 
         .tabela-despesas td {
-            padding: 8px;
+            padding: 6px;
         }
 
         .remove-despesa {
             background: #e74c3c;
-            padding: 3px 8px;
-            font-size: 12px;
+            padding: 3px 6px;
+            font-size: 10px;
+            width: auto;
         }
 
         .total-solicitacao {
-            font-size: 1.2em;
+            font-size: 1rem;
             font-weight: bold;
             text-align: right;
-            margin-top: 15px;
-            padding: 10px;
+            margin-top: 12px;
+            padding: 8px;
             background: #f0f0f0;
             border-radius: 5px;
         }
 
-        body.noturno .total-solicitacao {
-            background: #3d3d4a;
+        @media (min-width: 768px) {
+            .total-solicitacao {
+                font-size: 1.2em;
+                margin-top: 15px;
+                padding: 10px;
+            }
         }
 
-        .correcao-badge {
-            background: #e74c3c;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            margin-left: 5px;
-        }
-
-        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -402,180 +688,316 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            padding: 10px;
         }
 
         .modal-content {
             background: white;
-            padding: 30px;
+            padding: 15px;
             border-radius: 10px;
             max-width: 600px;
-            width: 90%;
+            width: 100%;
             max-height: 80vh;
             overflow-y: auto;
             transition: background-color 0.3s;
         }
 
+        @media (min-width: 768px) {
+            .modal-content {
+                padding: 30px;
+            }
+        }
+
         .modal-header {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        @media (min-width: 768px) {
+            .modal-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+        }
+
+        .modal-header h2 {
+            font-size: 1.2rem;
+        }
+
+        @media (min-width: 768px) {
+            .modal-header h2 {
+                font-size: 1.5rem;
+            }
         }
 
         .modal-close {
             background: #e74c3c;
             padding: 5px 10px;
-            font-size: 14px;
+            font-size: 12px;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .modal-close {
+                width: auto;
+            }
         }
 
         .modal-footer {
-            margin-top: 20px;
-            text-align: right;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        @media (min-width: 768px) {
+            .modal-footer {
+                margin-top: 20px;
+                text-align: right;
+            }
+        }
+
+        .modal-footer button {
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .modal-footer button {
+                width: auto;
+            }
+        }
+
+        /* Ajustes para telas muito pequenas */
+        @media (max-width: 480px) {
+            .tabela-despesas {
+                font-size: 10px;
+            }
+            
+            .tabela-despesas th,
+            .tabela-despesas td {
+                padding: 4px;
+            }
+            
+            .solicitacao-numero {
+                font-size: 10px;
+            }
+            
+            .status-badge {
+                font-size: 9px;
+                padding: 3px 6px;
+            }
+            
+            .action-btn {
+                font-size: 9px;
+                padding: 4px 6px;
+            }
         }
     </style>
 </head>
 <body class="diurno">
-    <div class="container">
-        <div class="header">
-            <h1>📝 Sistema de Solicitações de Despesas</h1>
-            <button class="theme-btn" onclick="toggleTheme()">🌓 Modo Noturno</button>
-        </div>
-
-        <div class="admin-toggle">
-            <button id="btnUserView" class="active" onclick="mudarVisao('usuario')">👤 Visão do Usuário</button>
-            <button id="btnAdminView" onclick="mudarVisao('admin')">👨‍💼 Visão do Administrador</button>
-        </div>
-
-        <div id="statusMessage" class="status-message"></div>
-
-        <!-- Abas de navegação (visível apenas para usuário) -->
-        <div id="userTabs" class="nav-tabs">
-            <div class="nav-tab active" onclick="mudarAba('form')">➕ Nova Solicitação</div>
-            <div class="nav-tab" onclick="mudarAba('minhasSolicitacoes')">📋 Minhas Solicitações</div>
-        </div>
-
-        <!-- Formulário de Nova Solicitação -->
-        <div id="formSection">
-            <div class="form-container">
-                <form id="solicitacaoForm">
-                    <!-- Campo oculto para ID da solicitação em correção -->
-                    <input type="hidden" id="solicitacaoId" value="">
-                    
-                    <div class="form-group">
-                        <label for="data">Data da Solicitação *</label>
-                        <input type="date" id="data" required>
-                    </div>
-
-                    <!-- Seção de Despesas Múltiplas -->
-                    <div class="despesas-section">
-                        <div class="despesas-header">
-                            <h3>📦 Despesas da Solicitação</h3>
-                            <button type="button" class="button-add" onclick="adicionarLinhaDespesa()">➕ Adicionar Despesa</button>
-                        </div>
-
-                        <div class="table-container">
-                            <table class="tabela-despesas" id="tabelaDespesas">
-                                <thead>
-                                    <tr>
-                                        <th>Categoria</th>
-                                        <th>Descrição</th>
-                                        <th>Valor (R$)</th>
-                                        <th>Forma Pagamento</th>
-                                        <th>Observações</th>
-                                        <th>Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="corpoDespesas">
-                                    <!-- Linhas de despesas serão inseridas aqui -->
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="total-solicitacao" id="totalSolicitacao">
-                            Total da Solicitação: R$ 0,00
-                        </div>
-                    </div>
-
-                    <div class="btn-group">
-                        <button type="submit">📤 Enviar Solicitação</button>
-                        <button type="button" class="button-secondary" onclick="limparFormulario()">🔄 Limpar Formulário</button>
-                    </div>
-                </form>
+    <!-- Tela de Login -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-box">
+            <h2>🔐 Sistema de Despesas</h2>
+            <div id="loginMessage" class="status-message"></div>
+            
+            <div class="form-group">
+                <label for="loginEmail">E-mail</label>
+                <input type="email" id="loginEmail" placeholder="seu@email.com" value="admin@email.com">
+            </div>
+            <div class="form-group">
+                <label for="loginSenha">Senha</label>
+                <input type="password" id="loginSenha" placeholder="******" value="123456">
+            </div>
+            
+            <button onclick="fazerLogin()">Entrar</button>
+            
+            <div class="login-links">
+                <p>Não tem conta? <a onclick="mostrarCadastro()">Cadastre-se</a></p>
             </div>
         </div>
+    </div>
 
-        <!-- Seção de Minhas Solicitações -->
-        <div id="minhasSolicitacoesSection" style="display: none;">
-            <div class="filter-section">
-                <h3>Filtrar por status:</h3>
-                <select id="filtroStatus" onchange="filtrarSolicitacoes()">
-                    <option value="todos">Todos</option>
-                    <option value="pendente">Pendente de Aprovação</option>
-                    <option value="correcao">Correção</option>
-                    <option value="finalizado">Finalizado</option>
-                    <option value="negado">Negado</option>
+    <!-- Tela de Cadastro -->
+    <div id="cadastroScreen" class="login-container" style="display: none;">
+        <div class="login-box">
+            <h2>📝 Criar Conta</h2>
+            <div id="cadastroMessage" class="status-message"></div>
+            
+            <div class="form-group">
+                <label for="cadastroNome">Nome completo</label>
+                <input type="text" id="cadastroNome" placeholder="Seu nome">
+            </div>
+            <div class="form-group">
+                <label for="cadastroEmail">E-mail</label>
+                <input type="email" id="cadastroEmail" placeholder="seu@email.com">
+            </div>
+            <div class="form-group">
+                <label for="cadastroSenha">Senha</label>
+                <input type="password" id="cadastroSenha" placeholder="******">
+            </div>
+            <div class="form-group">
+                <label for="cadastroTipo">Tipo de usuário</label>
+                <select id="cadastroTipo">
+                    <option value="usuario">Usuário Comum</option>
+                    <option value="admin">Administrador</option>
                 </select>
             </div>
-
-            <div class="export-buttons">
-                <button class="button-success" onclick="exportarExcelUsuario()">📊 Exportar Excel</button>
-                <button class="button-danger" onclick="exportarPDFUsuario()">📄 Exportar PDF</button>
-            </div>
-
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Solicitação</th>
-                            <th>Data</th>
-                            <th>Qtd. Despesas</th>
-                            <th>Valor Total</th>
-                            <th>Status</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabelaMinhasSolicitacoes">
-                        <!-- Será preenchido via JavaScript -->
-                    </tbody>
-                </table>
+            
+            <button onclick="fazerCadastro()">Cadastrar</button>
+            
+            <div class="login-links">
+                <p>Já tem conta? <a onclick="mostrarLogin()">Voltar ao login</a></p>
             </div>
         </div>
+    </div>
 
-        <!-- Seção do Administrador (visível apenas no modo admin) -->
-        <div id="adminSection" style="display: none;">
-            <div class="filter-section">
-                <h3>Filtrar por status:</h3>
-                <select id="filtroAdminStatus" onchange="filtrarSolicitacoesAdmin()">
-                    <option value="todos">Todos</option>
-                    <option value="pendente">Pendente de Aprovação</option>
-                    <option value="correcao">Correção</option>
-                    <option value="finalizado">Finalizado</option>
-                    <option value="negado">Negado</option>
-                </select>
+    <!-- Sistema Principal -->
+    <div id="mainScreen" style="display: none;">
+        <div class="container">
+            <div class="header">
+                <h1>📝 Solicitações de Despesas</h1>
+                <div class="header-controls">
+                    <div class="user-info">
+                        <span class="user-name" id="userNameDisplay"></span>
+                        <button class="logout-btn" onclick="logout()">Sair</button>
+                    </div>
+                    <button class="theme-btn" onclick="toggleTheme()">🌓 Modo Noturno</button>
+                </div>
             </div>
 
-            <div class="export-buttons">
-                <button class="button-success" onclick="exportarExcelAdmin()">📊 Exportar Excel</button>
-                <button class="button-danger" onclick="exportarPDFAdmin()">📄 Exportar PDF</button>
+            <div class="admin-toggle">
+                <button id="btnUserView" class="active" onclick="mudarVisao('usuario')" disabled>👤 Visão do Usuário</button>
+                <button id="btnAdminView" onclick="mudarVisao('admin')" disabled>👨‍💼 Visão do Administrador</button>
             </div>
 
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Solicitação</th>
-                            <th>Usuário</th>
-                            <th>Data</th>
-                            <th>Qtd. Despesas</th>
-                            <th>Valor Total</th>
-                            <th>Status</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabelaAdminSolicitacoes">
-                        <!-- Será preenchido via JavaScript -->
-                    </tbody>
-                </table>
+            <div id="statusMessage" class="status-message"></div>
+
+            <!-- Abas de navegação (visível apenas para usuário) -->
+            <div id="userTabs" class="nav-tabs">
+                <div class="nav-tab active" onclick="mudarAba('form')">➕ Nova Solicitação</div>
+                <div class="nav-tab" onclick="mudarAba('minhasSolicitacoes')">📋 Minhas Solicitações</div>
+            </div>
+
+            <!-- Formulário de Nova Solicitação -->
+            <div id="formSection">
+                <div class="form-container">
+                    <form id="solicitacaoForm">
+                        <input type="hidden" id="solicitacaoId" value="">
+                        
+                        <div class="form-group">
+                            <label for="data">Data da Solicitação *</label>
+                            <input type="date" id="data" required>
+                        </div>
+
+                        <div class="despesas-section">
+                            <div class="despesas-header">
+                                <h3>📦 Despesas da Solicitação</h3>
+                                <button type="button" class="button-add" onclick="adicionarLinhaDespesa()">➕ Adicionar Despesa</button>
+                            </div>
+
+                            <div class="table-container">
+                                <table class="tabela-despesas" id="tabelaDespesas">
+                                    <thead>
+                                        <tr>
+                                            <th>Categoria</th>
+                                            <th>Descrição</th>
+                                            <th>Valor (R$)</th>
+                                            <th>Pagamento</th>
+                                            <th>Obs</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="corpoDespesas"></tbody>
+                                </table>
+                            </div>
+
+                            <div class="total-solicitacao" id="totalSolicitacao">
+                                Total: R$ 0,00
+                            </div>
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="submit">📤 Enviar Solicitação</button>
+                            <button type="button" class="button-secondary" onclick="limparFormulario()">🔄 Limpar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Seção de Minhas Solicitações -->
+            <div id="minhasSolicitacoesSection" style="display: none;">
+                <div class="filter-section">
+                    <h3>Filtrar por status:</h3>
+                    <select id="filtroStatus" onchange="filtrarSolicitacoes()">
+                        <option value="todos">Todos</option>
+                        <option value="pendente">Pendente</option>
+                        <option value="correcao">Correção</option>
+                        <option value="finalizado">Finalizado</option>
+                        <option value="negado">Negado</option>
+                        <option value="reaberto">Reaberto</option>
+                    </select>
+                </div>
+
+                <div class="export-buttons">
+                    <button class="button-success" onclick="exportarExcelUsuario()">📊 Excel</button>
+                    <button class="button-danger" onclick="exportarPDFUsuario()">📄 PDF</button>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nº</th>
+                                <th>Data</th>
+                                <th>Despesas</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaMinhasSolicitacoes"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Seção do Administrador -->
+            <div id="adminSection" style="display: none;">
+                <div class="filter-section">
+                    <h3>Filtrar por status:</h3>
+                    <select id="filtroAdminStatus" onchange="filtrarSolicitacoesAdmin()">
+                        <option value="todos">Todos</option>
+                        <option value="pendente">Pendente</option>
+                        <option value="correcao">Correção</option>
+                        <option value="finalizado">Finalizado</option>
+                        <option value="negado">Negado</option>
+                        <option value="reaberto">Reaberto</option>
+                    </select>
+                </div>
+
+                <div class="export-buttons">
+                    <button class="button-success" onclick="exportarExcelAdmin()">📊 Excel</button>
+                    <button class="button-danger" onclick="exportarPDFAdmin()">📄 PDF</button>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nº</th>
+                                <th>Usuário</th>
+                                <th>Data</th>
+                                <th>Despesas</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaAdminSolicitacoes"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -585,40 +1007,141 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Detalhes da Solicitação</h2>
-                <button class="modal-close" onclick="fecharModal()">✖</button>
+                <button class="modal-close" onclick="fecharModal()">✖ Fechar</button>
             </div>
             <div id="modalConteudo"></div>
-            <div class="modal-footer">
-                <button onclick="fecharModal()">Fechar</button>
-            </div>
         </div>
     </div>
 
     <script>
-        // Estruturas de dados
+        // ========== ESTRUTURAS DE DADOS ==========
+        let usuarios = [];
         let solicitacoes = [];
-        let usuarios = ['Usuário Padrão'];
+        let usuarioAtual = null;
+        let contadorSolicitacoes = 1;
+        let temaAtual = 'diurno';
         let visaoAtual = 'usuario';
         let abaAtual = 'form';
-        let temaAtual = 'diurno';
-        let contadorSolicitacoes = 1;
-        let solicitacaoEmEdicao = null;
 
-        // Inicialização
+        // Usuário admin padrão
+        const adminPadrao = {
+            id: 1,
+            nome: 'Administrador',
+            email: 'admin@email.com',
+            senha: '123456',
+            tipo: 'admin'
+        };
+
+        // ========== INICIALIZAÇÃO ==========
         document.addEventListener('DOMContentLoaded', function() {
             carregarDados();
-            atualizarContador();
-            atualizarTabelas();
-            adicionarLinhaDespesa();
+            if (!usuarios || usuarios.length === 0) {
+                usuarios = [adminPadrao];
+            }
+            salvarDados();
         });
 
-        // Evento de submit do formulário
-        document.getElementById('solicitacaoForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            enviarSolicitacao();
-        });
+        // ========== FUNÇÕES DE AUTENTICAÇÃO ==========
+        function mostrarCadastro() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('cadastroScreen').style.display = 'block';
+        }
 
-        // Funções de Tema
+        function mostrarLogin() {
+            document.getElementById('cadastroScreen').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'block';
+        }
+
+        function fazerCadastro() {
+            const nome = document.getElementById('cadastroNome').value;
+            const email = document.getElementById('cadastroEmail').value;
+            const senha = document.getElementById('cadastroSenha').value;
+            const tipo = document.getElementById('cadastroTipo').value;
+
+            if (!nome || !email || !senha) {
+                mostrarMensagemCadastro('Preencha todos os campos!', 'error');
+                return;
+            }
+
+            if (usuarios.find(u => u.email === email)) {
+                mostrarMensagemCadastro('E-mail já cadastrado!', 'error');
+                return;
+            }
+
+            const novoUsuario = {
+                id: Date.now(),
+                nome: nome,
+                email: email,
+                senha: senha,
+                tipo: tipo
+            };
+
+            usuarios.push(novoUsuario);
+            salvarDados();
+            
+            mostrarMensagemCadastro('Cadastro realizado! Faça login.', 'success');
+            setTimeout(() => {
+                mostrarLogin();
+            }, 2000);
+        }
+
+        function fazerLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const senha = document.getElementById('loginSenha').value;
+
+            const usuario = usuarios.find(u => u.email === email && u.senha === senha);
+
+            if (usuario) {
+                usuarioAtual = usuario;
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainScreen').style.display = 'block';
+                document.getElementById('userNameDisplay').textContent = usuario.nome;
+                
+                // Habilitar/desabilitar botões conforme tipo de usuário
+                document.getElementById('btnUserView').disabled = usuario.tipo !== 'admin';
+                document.getElementById('btnAdminView').disabled = usuario.tipo !== 'admin';
+                
+                if (usuario.tipo === 'admin') {
+                    mudarVisao('admin');
+                } else {
+                    mudarVisao('usuario');
+                }
+                
+                atualizarTabelas();
+            } else {
+                mostrarMensagemLogin('E-mail ou senha inválidos!', 'error');
+            }
+        }
+
+        function logout() {
+            usuarioAtual = null;
+            document.getElementById('mainScreen').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginSenha').value = '';
+        }
+
+        function mostrarMensagemLogin(msg, tipo) {
+            const div = document.getElementById('loginMessage');
+            div.textContent = msg;
+            div.className = `status-message ${tipo}`;
+            setTimeout(() => {
+                div.style.display = 'none';
+                div.className = 'status-message';
+            }, 3000);
+        }
+
+        function mostrarMensagemCadastro(msg, tipo) {
+            const div = document.getElementById('cadastroMessage');
+            div.textContent = msg;
+            div.className = `status-message ${tipo}`;
+            setTimeout(() => {
+                div.style.display = 'none';
+                div.className = 'status-message';
+            }, 3000);
+        }
+
+        // ========== FUNÇÕES DE TEMA ==========
         function toggleTheme() {
             const body = document.body;
             const themeBtn = document.querySelector('.theme-btn');
@@ -636,8 +1159,12 @@
             }
         }
 
-        // Funções de Navegação
+        // ========== FUNÇÕES DE NAVEGAÇÃO ==========
         function mudarVisao(visao) {
+            if (usuarioAtual.tipo !== 'admin' && visao === 'admin') {
+                return;
+            }
+            
             visaoAtual = visao;
             
             document.getElementById('btnUserView').classList.toggle('active', visao === 'usuario');
@@ -674,7 +1201,7 @@
             }
         }
 
-        // Funções para Múltiplas Despesas
+        // ========== FUNÇÕES DE DESPESAS ==========
         function adicionarLinhaDespesa(despesa = null) {
             const tbody = document.getElementById('corpoDespesas');
             const row = document.createElement('tr');
@@ -688,14 +1215,14 @@
             row.innerHTML = `
                 <td>
                     <select class="categoria-despesa" required>
-                        <option value="">Selecione</option>
-                        <option value="Alimentação" ${categoria === 'Alimentação' ? 'selected' : ''}>Alimentação</option>
-                        <option value="Transporte" ${categoria === 'Transporte' ? 'selected' : ''}>Transporte</option>
-                        <option value="Moradia" ${categoria === 'Moradia' ? 'selected' : ''}>Moradia</option>
+                        <option value="">...</option>
+                        <option value="Alimentação" ${categoria === 'Alimentação' ? 'selected' : ''}>Alim.</option>
+                        <option value="Transporte" ${categoria === 'Transporte' ? 'selected' : ''}>Transp.</option>
+                        <option value="Moradia" ${categoria === 'Moradia' ? 'selected' : ''}>Morad.</option>
                         <option value="Saúde" ${categoria === 'Saúde' ? 'selected' : ''}>Saúde</option>
-                        <option value="Educação" ${categoria === 'Educação' ? 'selected' : ''}>Educação</option>
+                        <option value="Educação" ${categoria === 'Educação' ? 'selected' : ''}>Educ.</option>
                         <option value="Lazer" ${categoria === 'Lazer' ? 'selected' : ''}>Lazer</option>
-                        <option value="Vestuário" ${categoria === 'Vestuário' ? 'selected' : ''}>Vestuário</option>
+                        <option value="Vestuário" ${categoria === 'Vestuário' ? 'selected' : ''}>Vest.</option>
                         <option value="Outros" ${categoria === 'Outros' ? 'selected' : ''}>Outros</option>
                     </select>
                 </td>
@@ -703,11 +1230,11 @@
                 <td><input type="number" class="valor-despesa" step="0.01" min="0.01" value="${valor}" placeholder="0,00" required onchange="calcularTotalSolicitacao()"></td>
                 <td>
                     <select class="formaPagamento-despesa">
-                        <option value="Dinheiro" ${formaPagamento === 'Dinheiro' ? 'selected' : ''}>Dinheiro</option>
-                        <option value="Cartão de Crédito" ${formaPagamento === 'Cartão de Crédito' ? 'selected' : ''}>Cartão de Crédito</option>
-                        <option value="Cartão de Débito" ${formaPagamento === 'Cartão de Débito' ? 'selected' : ''}>Cartão de Débito</option>
+                        <option value="Dinheiro" ${formaPagamento === 'Dinheiro' ? 'selected' : ''}>Din.</option>
+                        <option value="Cartão Crédito" ${formaPagamento === 'Cartão de Crédito' ? 'selected' : ''}>Cred.</option>
+                        <option value="Cartão Débito" ${formaPagamento === 'Cartão de Débito' ? 'selected' : ''}>Deb.</option>
                         <option value="PIX" ${formaPagamento === 'PIX' ? 'selected' : ''}>PIX</option>
-                        <option value="Boleto" ${formaPagamento === 'Boleto' ? 'selected' : ''}>Boleto</option>
+                        <option value="Boleto" ${formaPagamento === 'Boleto' ? 'selected' : ''}>Bol.</option>
                     </select>
                 </td>
                 <td><input type="text" class="observacoes-despesa" value="${observacoes}" placeholder="Obs"></td>
@@ -737,7 +1264,7 @@
             });
             
             document.getElementById('totalSolicitacao').textContent = 
-                `Total da Solicitação: R$ ${total.toFixed(2).replace('.', ',')}`;
+                `Total: R$ ${total.toFixed(2).replace('.', ',')}`;
             
             return total;
         }
@@ -767,26 +1294,30 @@
             return despesas;
         }
 
-        // Função principal de envio
+        // ========== FUNÇÃO PRINCIPAL DE ENVIO ==========
+        document.getElementById('solicitacaoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            enviarSolicitacao();
+        });
+
         function enviarSolicitacao() {
             const data = document.getElementById('data').value;
             const solicitacaoId = document.getElementById('solicitacaoId').value;
             const despesas = coletarDespesasDoForm();
             
             if (!data) {
-                mostrarMensagem('Selecione a data da solicitação!', 'error');
+                mostrarMensagem('Selecione a data!', 'error');
                 return;
             }
             
             if (despesas.length === 0) {
-                mostrarMensagem('Adicione pelo menos uma despesa válida!', 'error');
+                mostrarMensagem('Adicione pelo menos uma despesa!', 'error');
                 return;
             }
             
             const valorTotal = despesas.reduce((acc, d) => acc + d.valor, 0);
             
             if (solicitacaoId) {
-                // É uma CORREÇÃO - manter o mesmo número
                 const solicitacaoExistente = solicitacoes.find(s => s.id === parseInt(solicitacaoId));
                 
                 if (solicitacaoExistente) {
@@ -797,18 +1328,18 @@
                     solicitacaoExistente.historico.push({
                         data: new Date().toISOString(),
                         acao: 'Correção enviada',
-                        observacao: 'Usuário enviou correção da solicitação'
+                        observacao: 'Usuário enviou correção'
                     });
                     
                     salvarDados();
-                    mostrarMensagem(`Solicitação #${solicitacaoExistente.numero} corrigida com sucesso!`, 'success');
+                    mostrarMensagem(`Solicitação #${solicitacaoExistente.numero} corrigida!`, 'success');
                 }
             } else {
-                // É uma NOVA solicitação - criar novo número
                 const solicitacao = {
                     id: Date.now(),
                     numero: contadorSolicitacoes++,
-                    usuario: 'Usuário Padrão',
+                    usuarioId: usuarioAtual.id,
+                    usuarioNome: usuarioAtual.nome,
                     data: data,
                     despesas: despesas,
                     valorTotal: valorTotal,
@@ -822,19 +1353,19 @@
                 
                 solicitacoes.push(solicitacao);
                 salvarDados();
-                mostrarMensagem(`Solicitação #${solicitacao.numero} enviada com sucesso!`, 'success');
+                mostrarMensagem(`Solicitação #${solicitacao.numero} enviada!`, 'success');
             }
             
             limparFormulario();
             mudarAba('minhasSolicitacoes');
         }
 
-        // Funções de atualização das tabelas
+        // ========== FUNÇÕES DE ATUALIZAÇÃO DAS TABELAS ==========
         function atualizarMinhasSolicitacoes() {
             const filtro = document.getElementById('filtroStatus').value;
             const tbody = document.getElementById('tabelaMinhasSolicitacoes');
             
-            let solicitacoesFiltradas = solicitacoes.filter(s => s.usuario === 'Usuário Padrão');
+            let solicitacoesFiltradas = solicitacoes.filter(s => s.usuarioId === usuarioAtual.id);
             
             if (filtro !== 'todos') {
                 solicitacoesFiltradas = solicitacoesFiltradas.filter(s => s.status === filtro);
@@ -843,40 +1374,39 @@
             tbody.innerHTML = '';
             
             if (solicitacoesFiltradas.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 30px;">Nenhuma solicitação encontrada.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">Nenhuma solicitação</td></tr>';
                 return;
             }
             
             solicitacoesFiltradas.sort((a, b) => b.numero - a.numero).forEach(s => {
                 const tr = document.createElement('tr');
-                const statusClass = s.status === 'pendente' ? 'status-pendente' : 
-                                   s.status === 'correcao' ? 'status-correcao' : 
-                                   s.status === 'negado' ? 'status-negado' : 'status-finalizado';
+                const statusClass = `status-${s.status}`;
                 const statusText = s.status === 'pendente' ? 'Pendente' :
                                   s.status === 'correcao' ? 'Correção' :
-                                  s.status === 'negado' ? 'Negado' : 'Finalizado';
+                                  s.status === 'negado' ? 'Negado' :
+                                  s.status === 'reaberto' ? 'Reaberto' : 'Finalizado';
                 
                 let acoes = '';
-                if (s.status === 'pendente') {
+                if (s.status === 'pendente' || s.status === 'reaberto') {
                     acoes = `
                         <button class="action-btn delete-btn" onclick="excluirSolicitacao(${s.id})">Excluir</button>
-                        <button class="action-btn button-info" onclick="consultarSolicitacao(${s.id})">Consultar</button>
+                        <button class="action-btn button-info" onclick="consultarSolicitacao(${s.id})">Ver</button>
                     `;
                 } else if (s.status === 'correcao') {
                     acoes = `
                         <button class="action-btn button-warning" onclick="editarSolicitacao(${s.id})">Corrigir</button>
-                        <button class="action-btn button-info" onclick="consultarSolicitacao(${s.id})">Consultar</button>
+                        <button class="action-btn button-info" onclick="consultarSolicitacao(${s.id})">Ver</button>
                     `;
                 } else {
                     acoes = `
-                        <button class="action-btn button-info" onclick="consultarSolicitacao(${s.id})">Consultar</button>
+                        <button class="action-btn button-info" onclick="consultarSolicitacao(${s.id})">Ver</button>
                     `;
                 }
                 
                 tr.innerHTML = `
                     <td><span class="solicitacao-numero">#${s.numero}</span></td>
                     <td>${formatarData(s.data)}</td>
-                    <td>${s.despesas.length} despesa(s)</td>
+                    <td>${s.despesas.length}</td>
                     <td>R$ ${s.valorTotal.toFixed(2).replace('.', ',')}</td>
                     <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                     <td class="btn-group">${acoes}</td>
@@ -898,44 +1428,54 @@
             tbody.innerHTML = '';
             
             if (solicitacoesFiltradas.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">Nenhuma solicitação encontrada.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">Nenhuma solicitação</td></tr>';
                 return;
             }
             
             solicitacoesFiltradas.sort((a, b) => b.numero - a.numero).forEach(s => {
                 const tr = document.createElement('tr');
-                const statusClass = s.status === 'pendente' ? 'status-pendente' : 
-                                   s.status === 'correcao' ? 'status-correcao' : 
-                                   s.status === 'negado' ? 'status-negado' : 'status-finalizado';
+                const statusClass = `status-${s.status}`;
                 const statusText = s.status === 'pendente' ? 'Pendente' :
                                   s.status === 'correcao' ? 'Correção' :
-                                  s.status === 'negado' ? 'Negado' : 'Finalizado';
+                                  s.status === 'negado' ? 'Negado' :
+                                  s.status === 'reaberto' ? 'Reaberto' : 'Finalizado';
                 
-                let acoes = '';
+                let acoes = `
+                    <button class="action-btn button-info" onclick="consultarSolicitacao(${s.id})">Ver</button>
+                `;
+                
+                if (s.status === 'finalizado' || s.status === 'negado') {
+                    acoes += `
+                        <button class="action-btn button-warning" onclick="reabrirSolicitacao(${s.id})">Reabrir</button>
+                    `;
+                }
+                
+                if (s.status === 'finalizado' || s.status === 'negado' || s.status === 'reaberto') {
+                    acoes += `
+                        <button class="action-btn delete-btn" onclick="excluirSolicitacaoAdmin(${s.id})">Excluir</button>
+                    `;
+                }
+                
                 if (s.status === 'pendente') {
                     acoes = `
                         <button class="action-btn button-success" onclick="aprovarSolicitacao(${s.id})">Aprovar</button>
-                        <button class="action-btn button-warning" onclick="solicitarCorrecao(${s.id})">Correção</button>
+                        <button class="action-btn button-warning" onclick="solicitarCorrecao(${s.id})">Corrigir</button>
                         <button class="action-btn button-danger" onclick="negarSolicitacao(${s.id})">Negar</button>
-                        <button class="action-btn button-info" onclick="consultarSolicitacao(${s.id})">Consultar</button>
+                        <button class="action-btn button-info" onclick="consultarSolicitacao(${s.id})">Ver</button>
                     `;
                 } else if (s.status === 'correcao') {
                     acoes = `
                         <button class="action-btn button-success" onclick="aprovarSolicitacao(${s.id})">Aprovar</button>
                         <button class="action-btn button-danger" onclick="negarSolicitacao(${s.id})">Negar</button>
-                        <button class="action-btn button-info" onclick="consultarSolicitacao(${s.id})">Consultar</button>
-                    `;
-                } else {
-                    acoes = `
-                        <button class="action-btn button-info" onclick="consultarSolicitacao(${s.id})">Consultar</button>
+                        <button class="action-btn button-info" onclick="consultarSolicitacao(${s.id})">Ver</button>
                     `;
                 }
                 
                 tr.innerHTML = `
                     <td><span class="solicitacao-numero">#${s.numero}</span></td>
-                    <td>${s.usuario}</td>
+                    <td>${s.usuarioNome}</td>
                     <td>${formatarData(s.data)}</td>
-                    <td>${s.despesas.length} despesa(s)</td>
+                    <td>${s.despesas.length}</td>
                     <td>R$ ${s.valorTotal.toFixed(2).replace('.', ',')}</td>
                     <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                     <td class="btn-group">${acoes}</td>
@@ -944,7 +1484,35 @@
             });
         }
 
-        // Funções de ação do admin
+        // ========== NOVAS FUNÇÕES DO ADMIN ==========
+        function reabrirSolicitacao(id) {
+            const solicitacao = solicitacoes.find(s => s.id === id);
+            if (solicitacao) {
+                const observacao = prompt('Motivo para reabrir a solicitação:');
+                if (observacao) {
+                    solicitacao.status = 'reaberto';
+                    solicitacao.historico.push({
+                        data: new Date().toISOString(),
+                        acao: 'Reaberto',
+                        observacao: observacao
+                    });
+                    salvarDados();
+                    atualizarTabelaAdmin();
+                    mostrarMensagem(`Solicitação #${solicitacao.numero} reaberta!`, 'success');
+                }
+            }
+        }
+
+        function excluirSolicitacaoAdmin(id) {
+            if (confirm('Tem certeza que deseja EXCLUIR esta solicitação permanentemente?')) {
+                solicitacoes = solicitacoes.filter(s => s.id !== id);
+                salvarDados();
+                atualizarTabelaAdmin();
+                mostrarMensagem('Solicitação excluída permanentemente!', 'success');
+            }
+        }
+
+        // ========== FUNÇÕES DE AÇÃO EXISTENTES ==========
         function aprovarSolicitacao(id) {
             const solicitacao = solicitacoes.find(s => s.id === id);
             if (solicitacao) {
@@ -952,7 +1520,7 @@
                 solicitacao.historico.push({
                     data: new Date().toISOString(),
                     acao: 'Aprovação',
-                    observacao: 'Solicitação aprovada pelo administrador'
+                    observacao: 'Solicitação aprovada'
                 });
                 salvarDados();
                 atualizarTabelaAdmin();
@@ -961,7 +1529,7 @@
         }
 
         function solicitarCorrecao(id) {
-            const observacao = prompt('Digite o motivo da correção necessária:');
+            const observacao = prompt('Digite o motivo da correção:');
             if (observacao) {
                 const solicitacao = solicitacoes.find(s => s.id === id);
                 if (solicitacao) {
@@ -1001,7 +1569,7 @@
                 solicitacoes = solicitacoes.filter(s => s.id !== id);
                 salvarDados();
                 atualizarMinhasSolicitacoes();
-                mostrarMensagem('Solicitação excluída com sucesso!', 'success');
+                mostrarMensagem('Solicitação excluída!', 'success');
             }
         }
 
@@ -1022,7 +1590,7 @@
                 
                 calcularTotalSolicitacao();
                 mudarAba('form');
-                mostrarMensagem(`Editando solicitação #${solicitacao.numero} - mantenha o mesmo número`, 'success');
+                mostrarMensagem(`Editando solicitação #${solicitacao.numero}`, 'success');
             }
         }
 
@@ -1032,7 +1600,7 @@
                 const modal = document.getElementById('modalConsulta');
                 const conteudo = document.getElementById('modalConteudo');
                 
-                let despesasHtml = '<table style="width:100%; margin:10px 0;"><tr><th>Categoria</th><th>Descrição</th><th>Valor</th><th>Pagamento</th></tr>';
+                let despesasHtml = '<div style="overflow-x: auto;"><table style="width:100%; margin:10px 0;"><tr><th>Categoria</th><th>Descrição</th><th>Valor</th><th>Pagamento</th></tr>';
                 solicitacao.despesas.forEach(d => {
                     despesasHtml += `<tr>
                         <td>${d.categoria}</td>
@@ -1041,7 +1609,7 @@
                         <td>${d.formaPagamento}</td>
                     </tr>`;
                 });
-                despesasHtml += `</table><p><strong>Total: R$ ${solicitacao.valorTotal.toFixed(2).replace('.', ',')}</strong></p>`;
+                despesasHtml += `</table></div><p><strong>Total: R$ ${solicitacao.valorTotal.toFixed(2).replace('.', ',')}</strong></p>`;
                 
                 let historicoHtml = '';
                 solicitacao.historico.forEach(item => {
@@ -1050,7 +1618,7 @@
                 
                 conteudo.innerHTML = `
                     <p><strong>Solicitação #:</strong> ${solicitacao.numero}</p>
-                    <p><strong>Data da Solicitação:</strong> ${formatarData(solicitacao.data)}</p>
+                    <p><strong>Data:</strong> ${formatarData(solicitacao.data)}</p>
                     <p><strong>Status:</strong> ${solicitacao.status}</p>
                     <hr>
                     <h3>Despesas:</h3>
@@ -1068,7 +1636,7 @@
             document.getElementById('modalConsulta').style.display = 'none';
         }
 
-        // Funções de filtro
+        // ========== FUNÇÕES DE FILTRO ==========
         function filtrarSolicitacoes() {
             atualizarMinhasSolicitacoes();
         }
@@ -1077,7 +1645,7 @@
             atualizarTabelaAdmin();
         }
 
-        // Funções de utilidade
+        // ========== FUNÇÕES DE UTILIDADE ==========
         function limparFormulario() {
             document.getElementById('solicitacaoForm').reset();
             document.getElementById('solicitacaoId').value = '';
@@ -1104,13 +1672,19 @@
         }
 
         function salvarDados() {
+            localStorage.setItem('usuarios', JSON.stringify(usuarios));
             localStorage.setItem('solicitacoes', JSON.stringify(solicitacoes));
             localStorage.setItem('contador', contadorSolicitacoes);
         }
 
         function carregarDados() {
+            const usuariosSalvos = localStorage.getItem('usuarios');
             const solicitacoesSalvas = localStorage.getItem('solicitacoes');
             const contadorSalvo = localStorage.getItem('contador');
+            
+            if (usuariosSalvos) {
+                usuarios = JSON.parse(usuariosSalvos);
+            }
             
             if (solicitacoesSalvas) {
                 solicitacoes = JSON.parse(solicitacoesSalvas);
@@ -1130,12 +1704,14 @@
 
         function atualizarTabelas() {
             atualizarMinhasSolicitacoes();
-            atualizarTabelaAdmin();
+            if (usuarioAtual && usuarioAtual.tipo === 'admin') {
+                atualizarTabelaAdmin();
+            }
         }
 
-        // Funções de Exportação
+        // ========== FUNÇÕES DE EXPORTAÇÃO ==========
         function gerarCSV(solicitacoesParaExportar, tipo) {
-            let csv = 'Número Solicitação,Data,Usuário,Status,Quantidade Despesas,Valor Total,Despesas\n';
+            let csv = 'Número,Data,Usuário,Status,Qtd Despesas,Valor Total,Despesas\n';
             
             solicitacoesParaExportar.forEach(s => {
                 const despesasResumo = s.despesas.map(d => 
@@ -1145,7 +1721,7 @@
                 const linha = [
                     s.numero,
                     formatarData(s.data),
-                    s.usuario,
+                    s.usuarioNome,
                     s.status,
                     s.despesas.length,
                     s.valorTotal.toFixed(2).replace('.', ','),
@@ -1159,53 +1735,51 @@
         }
 
         function exportarExcelUsuario() {
-            const usuarioAtual = 'Usuário Padrão';
-            const solicitacoesUsuario = solicitacoes.filter(s => s.usuario === usuarioAtual);
+            const solicitacoesUsuario = solicitacoes.filter(s => s.usuarioId === usuarioAtual.id);
             
             if (solicitacoesUsuario.length === 0) {
-                mostrarMensagem('Não há solicitações para exportar!', 'error');
+                mostrarMensagem('Não há solicitações!', 'error');
                 return;
             }
             
             const csv = gerarCSV(solicitacoesUsuario);
             downloadArquivo(csv, `minhas_solicitacoes_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`, 'text/csv');
-            mostrarMensagem('Arquivo Excel exportado com sucesso!', 'success');
+            mostrarMensagem('Arquivo exportado!', 'success');
         }
 
         function exportarExcelAdmin() {
             if (solicitacoes.length === 0) {
-                mostrarMensagem('Não há solicitações para exportar!', 'error');
+                mostrarMensagem('Não há solicitações!', 'error');
                 return;
             }
             
             const csv = gerarCSV(solicitacoes);
             downloadArquivo(csv, `todas_solicitacoes_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`, 'text/csv');
-            mostrarMensagem('Arquivo Excel exportado com sucesso!', 'success');
+            mostrarMensagem('Arquivo exportado!', 'success');
         }
 
         function exportarPDFUsuario() {
-            const usuarioAtual = 'Usuário Padrão';
-            const solicitacoesUsuario = solicitacoes.filter(s => s.usuario === usuarioAtual);
+            const solicitacoesUsuario = solicitacoes.filter(s => s.usuarioId === usuarioAtual.id);
             
             if (solicitacoesUsuario.length === 0) {
-                mostrarMensagem('Não há solicitações para exportar!', 'error');
+                mostrarMensagem('Não há solicitações!', 'error');
                 return;
             }
             
             const conteudoHTML = gerarHTMLParaPDF(solicitacoesUsuario, 'Minhas Solicitações');
             downloadArquivo(conteudoHTML, `minhas_solicitacoes_${new Date().toLocaleDateString().replace(/\//g, '-')}.html`, 'text/html');
-            mostrarMensagem('Arquivo HTML gerado! (Salve como PDF no navegador)', 'success');
+            mostrarMensagem('Arquivo HTML gerado!', 'success');
         }
 
         function exportarPDFAdmin() {
             if (solicitacoes.length === 0) {
-                mostrarMensagem('Não há solicitações para exportar!', 'error');
+                mostrarMensagem('Não há solicitações!', 'error');
                 return;
             }
             
             const conteudoHTML = gerarHTMLParaPDF(solicitacoes, 'Todas as Solicitações');
             downloadArquivo(conteudoHTML, `todas_solicitacoes_${new Date().toLocaleDateString().replace(/\//g, '-')}.html`, 'text/html');
-            mostrarMensagem('Arquivo HTML gerado! (Salve como PDF no navegador)', 'success');
+            mostrarMensagem('Arquivo HTML gerado!', 'success');
         }
 
         function gerarHTMLParaPDF(solicitacoesParaExportar, titulo) {
@@ -1214,6 +1788,7 @@
                 <html>
                 <head>
                     <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <title>${titulo}</title>
                     <style>
                         body { font-family: Arial, sans-serif; margin: 20px; }
@@ -1222,11 +1797,14 @@
                         th { background: #667eea; color: white; padding: 10px; }
                         td { border: 1px solid #ddd; padding: 8px; text-align: left; }
                         .total { font-weight: bold; margin-top: 20px; }
+                        @media print {
+                            body { margin: 0; }
+                        }
                     </style>
                 </head>
                 <body>
                     <h1>${titulo}</h1>
-                    <p>Data de geração: ${new Date().toLocaleString()}</p>
+                    <p>Data: ${new Date().toLocaleString()}</p>
             `;
             
             solicitacoesParaExportar.forEach(s => {
@@ -1234,7 +1812,7 @@
                     <h2>Solicitação #${s.numero}</h2>
                     <p><strong>Data:</strong> ${formatarData(s.data)}</p>
                     <p><strong>Status:</strong> ${s.status}</p>
-                    <p><strong>Usuário:</strong> ${s.usuario}</p>
+                    <p><strong>Usuário:</strong> ${s.usuarioNome}</p>
                     
                     <h3>Despesas:</h3>
                     <table>
@@ -1242,7 +1820,7 @@
                             <th>Categoria</th>
                             <th>Descrição</th>
                             <th>Valor</th>
-                            <th>Forma Pagamento</th>
+                            <th>Pagamento</th>
                         </tr>
                 `;
                 
