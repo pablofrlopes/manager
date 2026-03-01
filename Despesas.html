@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Cadastro de Despesas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2em;
+        }
+
+        .form-container {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .button-secondary {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+        }
+
+        .button-success {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            font-weight: 500;
+        }
+
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        .total-despesas {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: inline-block;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .status-message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 Sistema de Cadastro de Despesas</h1>
+        
+        <div id="statusMessage" class="status-message"></div>
+
+        <div class="form-container">
+            <form id="despesaForm">
+                <div class="form-group">
+                    <label for="data">Data *</label>
+                    <input type="date" id="data" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="categoria">Categoria *</label>
+                    <select id="categoria" required>
+                        <option value="">Selecione uma categoria</option>
+                        <option value="Alimentação">Alimentação</option>
+                        <option value="Transporte">Transporte</option>
+                        <option value="Moradia">Moradia</option>
+                        <option value="Saúde">Saúde</option>
+                        <option value="Educação">Educação</option>
+                        <option value="Lazer">Lazer</option>
+                        <option value="Vestuário">Vestuário</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="descricao">Descrição *</label>
+                    <input type="text" id="descricao" placeholder="Ex: Supermercado, Conta de luz..." required>
+                </div>
+
+                <div class="form-group">
+                    <label for="valor">Valor (R$) *</label>
+                    <input type="number" id="valor" step="0.01" min="0.01" placeholder="0,00" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="formaPagamento">Forma de Pagamento</label>
+                    <select id="formaPagamento">
+                        <option value="Dinheiro">Dinheiro</option>
+                        <option value="Cartão de Crédito">Cartão de Crédito</option>
+                        <option value="Cartão de Débito">Cartão de Débito</option>
+                        <option value="PIX">PIX</option>
+                        <option value="Boleto">Boleto</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="observacoes">Observações</label>
+                    <textarea id="observacoes" rows="3" placeholder="Observações adicionais..."></textarea>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit">➕ Adicionar Despesa</button>
+                    <button type="button" class="button-success" onclick="exportarParaExcel()">📊 Exportar para Excel</button>
+                    <button type="button" class="button-secondary" onclick="limparFormulario()">🔄 Limpar Formulário</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="total-despesas" id="totalDespesas">
+            Total: R$ 0,00
+        </div>
+
+        <div class="table-container">
+            <table id="tabelaDespesas">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Categoria</th>
+                        <th>Descrição</th>
+                        <th>Valor (R$)</th>
+                        <th>Forma de Pagamento</th>
+                        <th>Observações</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="corpoTabela">
+                    <!-- As despesas serão inseridas aqui via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Array para armazenar as despesas
+        let despesas = [];
+
+        // Carregar despesas do localStorage ao iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            carregarDespesas();
+        });
+
+        // Evento de submit do formulário
+        document.getElementById('despesaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            adicionarDespesa();
+        });
+
+        function adicionarDespesa() {
+            // Obter valores do formulário
+            const data = document.getElementById('data').value;
+            const categoria = document.getElementById('categoria').value;
+            const descricao = document.getElementById('descricao').value;
+            const valor = parseFloat(document.getElementById('valor').value);
+            const formaPagamento = document.getElementById('formaPagamento').value;
+            const observacoes = document.getElementById('observacoes').value;
+
+            // Validar campos obrigatórios
+            if (!data || !categoria || !descricao || !valor) {
+                mostrarMensagem('Por favor, preencha todos os campos obrigatórios.', 'error');
+                return;
+            }
+
+            // Criar objeto despesa
+            const despesa = {
+                id: Date.now(),
+                data: data,
+                categoria: categoria,
+                descricao: descricao,
+                valor: valor,
+                formaPagamento: formaPagamento,
+                observacoes: observacoes
+            };
+
+            // Adicionar ao array
+            despesas.push(despesa);
+
+            // Salvar no localStorage
+            salvarDespesas();
+
+            // Atualizar tabela
+            atualizarTabela();
+
+            // Atualizar total
+            atualizarTotal();
+
+            // Limpar formulário
+            document.getElementById('despesaForm').reset();
+
+            // Mostrar mensagem de sucesso
+            mostrarMensagem('Despesa adicionada com sucesso!', 'success');
+        }
+
+        function removerDespesa(id) {
+            if (confirm('Tem certeza que deseja excluir esta despesa?')) {
+                despesas = despesas.filter(despesa => despesa.id !== id);
+                salvarDespesas();
+                atualizarTabela();
+                atualizarTotal();
+                mostrarMensagem('Despesa removida com sucesso!', 'success');
+            }
+        }
+
+        function atualizarTabela() {
+            const corpoTabela = document.getElementById('corpoTabela');
+            corpoTabela.innerHTML = '';
+
+            if (despesas.length === 0) {
+                corpoTabela.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">Nenhuma despesa cadastrada.</td></tr>';
+                return;
+            }
+
+            despesas.sort((a, b) => new Date(b.data) - new Date(a.data)).forEach(despesa => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${formatarData(despesa.data)}</td>
+                    <td>${despesa.categoria}</td>
+                    <td>${despesa.descricao}</td>
+                    <td>R$ ${despesa.valor.toFixed(2).replace('.', ',')}</td>
+                    <td>${despesa.formaPagamento || '-'}</td>
+                    <td>${despesa.observacoes || '-'}</td>
+                    <td>
+                        <button class="delete-btn" onclick="removerDespesa(${despesa.id})">Excluir</button>
+                    </td>
+                `;
+                corpoTabela.appendChild(tr);
+            });
+        }
+
+        function atualizarTotal() {
+            const total = despesas.reduce((acc, despesa) => acc + despesa.valor, 0);
+            document.getElementById('totalDespesas').textContent = 
+                `Total: R$ ${total.toFixed(2).replace('.', ',')}`;
+        }
+
+        function formatarData(dataString) {
+            const data = new Date(dataString + 'T00:00:00');
+            return data.toLocaleDateString('pt-BR');
+        }
+
+        function mostrarMensagem(mensagem, tipo) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = mensagem;
+            statusDiv.className = `status-message ${tipo}`;
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+                statusDiv.className = 'status-message';
+            }, 3000);
+        }
+
+        function limparFormulario() {
+            document.getElementById('despesaForm').reset();
+        }
+
+        function salvarDespesas() {
+            localStorage.setItem('despesas', JSON.stringify(despesas));
+        }
+
+        function carregarDespesas() {
+            const despesasSalvas = localStorage.getItem('despesas');
+            if (despesasSalvas) {
+                despesas = JSON.parse(despesasSalvas);
+                atualizarTabela();
+                atualizarTotal();
+            }
+        }
+
+        function exportarParaExcel() {
+            if (despesas.length === 0) {
+                mostrarMensagem('Não há despesas para exportar!', 'error');
+                return;
+            }
+
+            // Criar cabeçalho do CSV
+            let csv = 'Data,Categoria,Descrição,Valor,Forma de Pagamento,Observações\n';
+
+            // Adicionar linhas de dados
+            despesas.forEach(despesa => {
+                const linha = [
+                    formatarData(despesa.data),
+                    `"${despesa.categoria}"`,
+                    `"${despesa.descricao}"`,
+                    despesa.valor.toFixed(2).replace('.', ','),
+                    `"${despesa.formaPagamento || ''}"`,
+                    `"${despesa.observacoes || ''}"`
+                ].join(',');
+                csv += linha + '\n';
+            });
+
+            // Adicionar linha com total
+            const total = despesas.reduce((acc, despesa) => acc + despesa.valor, 0);
+            csv += `\n"TOTAL GERAL",,,${total.toFixed(2).replace('.', ',')},,\n`;
+
+            // Criar e baixar o arquivo
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.href = url;
+            link.setAttribute('download', `despesas_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            mostrarMensagem('Arquivo exportado com sucesso!', 'success');
+        }
+    </script>
+</body>
+</html>
